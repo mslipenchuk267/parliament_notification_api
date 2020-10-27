@@ -5,6 +5,42 @@ class NotificationsController < ApplicationController
 
     def test_notification
         device_token = params[:deviceToken]
+
+        send_notification(device_token)
+        
+    end
+
+    private 
+
+    def send_notification(device_token)
+        if device_token.length < 162
+            send_apns_notification(device_token)
+        else 
+            send_fcm_notification(device_token)
+        end
+    end
+
+    def send_apns_notification(device_token)
+        n = Rpush::Apns::Notification.new
+        n.app = Rpush::Apns::App.find_by_name("parliament_ios")
+        n.device_token = device_token
+        n.alert = {
+            title: "From Notification API",
+            body: "Hello World 2"
+        }
+        # pass any custom data here
+        n.data = {
+            type: 'message',
+            user_name: 'Bob',
+        }
+        n.sound = "water_droplet_3.wav"
+        n.content_available = true
+        n.save!
+        
+        Rpush.push
+    end
+
+    def send_fcm_notification(device_token)
         url = URI("https://fcm.googleapis.com/fcm/send")
 
         https = Net::HTTP.new(url.host, url.port);
