@@ -10,8 +10,8 @@ class NotificationsController < ApplicationController
         @infectedIDs = JSON.generate(rawInfectedIDs) # => "{\"hello\":\"goodbye\"}"
 
         # Get deviceKeys from Auth API
-        device_tokens = params[:deviceTokens]
-
+        device_tokens = get_device_tokens
+        
         # Send notifications to all users
         device_tokens.each do |device_token|
             send_notification(device_token)
@@ -21,6 +21,22 @@ class NotificationsController < ApplicationController
     end
 
     private 
+
+    def get_device_tokens
+        url_string = ENV['AUTH_URI'] + "/device_keys"
+        url = URI(url_string)
+        http = Net::HTTP.new(url.host, url.port);
+        request = Net::HTTP::Post.new(url)
+        request["Content-Type"] = "application/json"
+        request.body = "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo2LCJ0eXBlIjoiYWNjZXNzIiwic2FsdCI6IlNwVlc0QlBLIn0.86XNvLqt7Hb9bNCDymtflsim89I4B0iIoYEXbKd0JxI\"\n}"
+        # Send Request
+        response = http.request(request)
+        # Format the response
+        result_json = JSON.parse(response.read_body)
+        device_tokens = result_json['device_keys']
+        # Remove null entries
+        device_tokens -= [nil]
+    end
 
     def send_notification(device_token)
         if device_token.length < 162
