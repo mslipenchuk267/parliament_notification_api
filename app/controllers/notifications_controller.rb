@@ -4,9 +4,11 @@ require "net/http"
 class NotificationsController < ApplicationController
 
     def test_notification
-        device_token = params[:deviceToken]
+        device_tokens = params[:deviceTokens]
 
-        send_notification(device_token)
+        device_tokens.each do |device_token|
+            send_notification(device_token)
+         end
         
     end
 
