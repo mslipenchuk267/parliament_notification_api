@@ -4,10 +4,8 @@ require "net/http"
 class NotificationsController < ApplicationController
 
     def test_notification
-        # Get  infectedIDs (tempIDs, date) from Infection API
-        rawInfectedIDs = [{"date":"2020-10-27T17:35:19.827Z","tempID":"092830j209f2"},{"date":"2020-10-27T17:35:19.827Z","tempID":"weokeokwpowe"}]
-        # format the infectedIDs so they can be embbeded
-        @infectedIDs = JSON.generate(rawInfectedIDs) # => "{\"hello\":\"goodbye\"}"
+        # Get  infectedIDs (temp_id, created_date) from Infection API
+        @infectedIDs = get_infected_ids
 
         # Get deviceKeys from Auth API
         device_tokens = get_device_tokens
@@ -21,6 +19,23 @@ class NotificationsController < ApplicationController
     end
 
     private 
+
+    def get_infected_ids
+        url_string = ENV['INFECTION_URI'] + "/temp_ids"
+        url = URI(url_string)
+        http = Net::HTTP.new(url.host, url.port);
+        request = Net::HTTP::Post.new(url)
+        request["Content-Type"] = "application/json"
+        request.body = "{\n  \"accessToken\":\"eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo3LCJ0eXBlIjoiYWNjZXNzIiwic2FsdCI6IkRuUUxDNUBaIn0.XYP-vxVsgGKc0rrzD3oOB-tQll3RDnNJHWAUudWysIg\"\n}"
+        
+        response = http.request(request)
+        # Format the response
+        result_json = JSON.parse(response.read_body)
+        rawInfectedIDs = result_json['temp_ids']
+        # Remove null entries
+        rawInfectedIDs -= [nil]
+        JSON.generate(rawInfectedIDs)
+    end
 
     def get_device_tokens
         url_string = ENV['AUTH_URI'] + "/device_keys"
