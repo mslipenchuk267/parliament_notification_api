@@ -82,6 +82,8 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  ENV['AUTH_URI'] = "http://a87713a1fd4b64cd4b788e8a1592de07-1206905140.us-west-2.elb.amazonaws.com"
+  ENV['INFECTION_URI'] = "http://a73906904480049e69678e0cb9be2e22-1728580132.us-east-2.elb.amazonaws.com"
   # Inserts middleware to perform automatic connection switching.
   # The `database_selector` hash is used to pass options to the DatabaseSelector
   # middleware. The `delay` is used to determine how long to wait after a write
