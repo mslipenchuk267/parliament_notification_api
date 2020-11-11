@@ -3,6 +3,12 @@ require "net/http"
 
 class NotificationsController < ApplicationController
 
+    def notify
+        #use a worker to do notification job
+        NotificationWorker.perform_async()
+        render text: "Starting a notification request in queue"
+    end
+        
     def test_notification
         # Get  infectedIDs (temp_id, created_date) from Infection API
         @infectedIDs = get_infected_ids
