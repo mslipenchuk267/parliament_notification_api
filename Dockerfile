@@ -20,22 +20,20 @@ RUN gem install bundler -v 2.0.2
 
 RUN bundle install --deployment
 
-RUN bundle exec rpush init
-
 COPY . ./
 
 # Append the rpush setup for iOS app in the config/initializers/rpush.rb file 
-RUN echo "\
-if (!Rpush::Apns::App.find_by_name(\"parliament_ios\")) \n\
-  app = Rpush::Apns::App.new \n\
-  app.name = \"parliament_ios\" \n\
-  env = Rails.env.development? ? \"development\" : \"production\" \n\
-  app.certificate = File.read(\"config/#{env}.pem\") \n\
-  app.environment = env # APNs environment. \n\
-  app.password = \"parliament\" \n\
-  app.connections = 1 \n\
-  app.save! \n\
-end" >> /config/intializers/rpush.rb
+# RUN echo "\
+# if (!Rpush::Apns::App.find_by_name(\"parliament_ios\")) \n\
+#   app = Rpush::Apns::App.new \n\
+#   app.name = \"parliament_ios\" \n\
+#   env = Rails.env.development? ? \"development\" : \"production\" \n\
+#   app.certificate = File.read(\"config/#{env}.pem\") \n\
+#   app.environment = env # APNs environment. \n\
+#   app.password = \"parliament\" \n\
+#   app.connections = 1 \n\
+#   app.save! \n\
+# end" >> /config/intializers/rpush.rb
 
 EXPOSE 3000
 
