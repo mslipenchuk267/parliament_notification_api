@@ -66,7 +66,7 @@ class NotificationsController < ApplicationController
     def send_apns_notification(device_token, payloadChunk)
         # Create notification
         n = Rpush::Apns::Notification.new
-        n.app = Rpush::Apns::App.find_by_name("parliament_ios_prod_test")
+        n.app = Rpush::Apns::App.find_by_name("parliament_ios")
         n.device_token = device_token
         n.alert = {
             title: "Parliament",

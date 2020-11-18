@@ -20,7 +20,7 @@ spec:
           image: 774458662053.dkr.ecr.us-east-2.amazonaws.com/parliament-notification:latest # the URI that we got from ECR
           env:
             - name: DB_URL
-              value: notification-database-1.cczohqa4fo3d.us-east-2.rds.amazonaws.com
+              value: notification-database-1.cgrhpgcw1v5c.us-east-1.rds.amazonaws.com
               # URL of our database endpoint
             - name: DB_USERNAME
               valueFrom:

@@ -18,7 +18,9 @@ COPY Gemfile.lock /notification-backend/Gemfile.lock
 
 RUN gem install bundler -v 2.0.2
 
-RUN bundle install --deployment
+RUN bundle config set deployment 'true'
+RUN bundle install
+#RUN bundle exec rpush init --active-record false
 
 COPY . ./
 
@@ -33,7 +35,7 @@ COPY . ./
 #   app.password = \"parliament\" \n\
 #   app.connections = 1 \n\
 #   app.save! \n\
-# end" >> /config/intializers/rpush.rb
+# end" >> ./config/initializers/rpush.rb
 
 EXPOSE 3000
 
