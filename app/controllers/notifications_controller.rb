@@ -3,30 +3,19 @@ require "net/http"
 
 class NotificationsController < ApplicationController
 
-    def notify
-        #use a worker to do notification job
-        NotificationWorker.perform_async()
-        render text: "Starting a notification request in queue"
-    end
-        
     def test_notification
         # Get  infectedIDs (temp_id, created_date) from Infection API
-        @infectedIDs = get_infected_ids
+        infectedIDs = get_infected_ids
+        payloadChunks = infectedIDs.each_slice(19)
 
         # Get deviceKeys from Auth API
         device_tokens = get_device_tokens
         
-<<<<<<< Updated upstream
         # Send notifications to all users
-        device_tokens.each do |device_token|
-            send_notification(device_token)
-=======
-        # Create jobs in the queue that send notifications to all users
-        payloadChunks.each do |payloadChunk|   
+        payloadChunks.each do |payloadChunk|    
             NotificationWorker.perform_async(device_tokens,payloadChunk)
->>>>>>> Stashed changes
         end
-
+        
         render json: {status: "Successfully sent notifications"}
 
     end
@@ -47,7 +36,6 @@ class NotificationsController < ApplicationController
         rawInfectedIDs = result_json['temp_ids']
         # Remove null entries
         rawInfectedIDs -= [nil]
-        JSON.generate(rawInfectedIDs)
     end
 
     def get_device_tokens
@@ -66,27 +54,27 @@ class NotificationsController < ApplicationController
         device_tokens -= [nil]
     end
 
-    def send_notification(device_token)
+    def send_notification(device_token, payloadChunk)
         if device_token.length < 162
-            send_apns_notification(device_token)
+            send_apns_notification(device_token, payloadChunk)
         else 
-            send_fcm_notification(device_token)
+            send_fcm_notification(device_token, payloadChunk)
         end
     end
 
-    def send_apns_notification(device_token)
+    def send_apns_notification(device_token, payloadChunk)
         # Create notification
         n = Rpush::Apns::Notification.new
         n.app = Rpush::Apns::App.find_by_name("parliament_ios")
         n.device_token = device_token
         n.alert = {
-            title: "From Notification API",
-            body: "Hello World 2"
+            title: "Parliament",
+            body: "Check the Notifications Tab!"
         }
         # pass any custom data here
         n.data = {
             type: 'message',
-            infectedIDs: @infectedIDs,
+            infectedIDs: payloadChunk,
         }
         n.sound = "water_droplet_3.wav"
         n.content_available = true
@@ -95,7 +83,7 @@ class NotificationsController < ApplicationController
         Rpush.push
     end
 
-    def send_fcm_notification(device_token)
+    def send_fcm_notification(device_token, payloadChunk)
         # Assemble Request
         url = URI("https://fcm.googleapis.com/fcm/send")
         https = Net::HTTP.new(url.host, url.port);
@@ -104,10 +92,9 @@ class NotificationsController < ApplicationController
         request["Authorization"] = "key=AAAAQPfWnqU:APA91bELotc45F69FyZUtQL5A4NnrIVwS-CsiMOE2OaWWgrcf53v3tvrbVdkZoL-b7ApjfgygOdN3Dd8neo45NGnpIhof8WfQ1pllAxXv3DWL3nVu1x36oOVnrTL09AH0sc9CnfRMir1"
         request["Content-Type"] = "application/json"
         request["Host"] = "fcm.googleapis.com"
-        request.body = "{\n    \"to\":\"#{device_token}\",\n    \"notification\" : {\n     \"body\" : \"please work\",\n     \"title\": \"Notification from postman\"\n    },\n    \"data\" : {\n        \"body\" : \"please work\",\n        \"title\": \"Notification from postman\",\n        \"infectedIDs\": #{@infectedIDs}  }\n}"
+        request.body = "{\n    \"to\":\"#{device_token}\",\n    \"notification\" : {\n     \"body\" : \"please work\",\n     \"title\": \"Notification from postman\"\n    },\n    \"data\" : {\n        \"body\" : \"please work\",\n        \"title\": \"Notification from postman\",\n        \"infectedIDs\": #{payloadChunk}  }\n}"
         # Send Request
         response = https.request(request)
-        # Send Feedback
     end
 
 end
