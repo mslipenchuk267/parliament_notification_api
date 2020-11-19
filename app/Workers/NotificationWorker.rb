@@ -2,11 +2,11 @@ class NotificationWorker
   include Sidekiq::Worker
   sidekiq_options retry: false
 
-  # def perform(start_date, end_date)
-  def perform()
-    # puts "SIDEKIQ WORKER GENERATING A REPORT FROM #{start_date} to #{end_date}"
+  def perform(deviceTokens,payloadChunk)
     puts "SIDEKIQ WORKER SENDING NOTIFICATIONS"
-    sleep 30
+    deviceTokens.each do |deviceToken|
+      send_notification(deviceToken, JSON.generate(payloadChunk))
+    end
   end
 
 end
