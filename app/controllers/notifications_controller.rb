@@ -16,10 +16,17 @@ class NotificationsController < ApplicationController
         # Get deviceKeys from Auth API
         device_tokens = get_device_tokens
         
+<<<<<<< Updated upstream
         # Send notifications to all users
         device_tokens.each do |device_token|
             send_notification(device_token)
+=======
+        # Create jobs in the queue that send notifications to all users
+        payloadChunks.each do |payloadChunk|   
+            NotificationWorker.perform_async(device_tokens,payloadChunk)
+>>>>>>> Stashed changes
         end
+
         render json: {status: "Successfully sent notifications"}
 
     end
