@@ -11,11 +11,18 @@ class NotificationsController < ApplicationController
         # Get deviceKeys from Auth API
         device_tokens = get_device_tokens
         
+        puts device_tokens
         # Send notifications to all users
-        payloadChunks.each do |payloadChunk|    
-            NotificationWorker.perform_async(device_tokens,payloadChunk)
-        end
-        
+        # payloadChunks.each do |payloadChunk|    
+        #     TestWorker.perform_async(device_tokens,payloadChunk)
+        # end
+
+
+        # # Send notifications to all users
+        # payloadChunks.each do |payloadChunk|    
+        #     NotificationWorker.perform_async(device_tokens,payloadChunk)
+        # end
+
         render json: {status: "Successfully sent notifications"}
 
     end
@@ -61,6 +68,28 @@ class NotificationsController < ApplicationController
             send_fcm_notification(device_token, payloadChunk)
         end
     end
+
+    def test_notification(device_token, payloadChunk)
+        if device_token.length < 162
+            test_apns_notification(device_token, payloadChunk)
+        else 
+            test_fcm_notification(device_token, payloadChunk)
+        end
+    end
+
+
+    def test_apns_notification(device_token, payloadChunk)
+        puts "An ios notification"
+        puts device_token
+        puts payloadChunk
+    end
+
+    def test_fcm_notification(device_token,payloadChunk)
+        puts "An android notification"
+        puts device_token
+        puts payloadChunk
+    end
+
 
     def send_apns_notification(device_token, payloadChunk)
         # Create notification
