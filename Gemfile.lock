@@ -135,7 +135,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    redis (4.2.2)
+    redis (4.2.4)
     rpush (5.2.0)
       activesupport (>= 5.0)
       jwt (>= 1.5.6)
