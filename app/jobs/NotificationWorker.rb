@@ -1,11 +1,11 @@
 class NotificationWorker
     include Sidekiq::Worker
-    sidekiq_options retry: 3
+    sidekiq_options retry: false
   
     def perform(deviceTokens,payloadChunk)
       puts "SIDEKIQ WORKER SENDING NOTIFICATIONS"
       deviceTokens.each do |deviceToken|
-        sent_notification(deviceToken, JSON.generate(payloadChunk))
+        send_notification(deviceToken, JSON.generate(payloadChunk))
       end
     end
 
@@ -20,7 +20,7 @@ class NotificationWorker
     def send_apns_notification(device_token, payloadChunk)
         # Create notification
         n = Rpush::Apns::Notification.new
-        n.app = Rpush::Apns::App.find_by_name("parliament_ios")
+        n.app = Rpush::Apns::App.find_by_name("parliament_ios_distributed")
         n.device_token = device_token
         n.alert = {
             title: "Parliament",
@@ -31,6 +31,10 @@ class NotificationWorker
             type: 'message',
             infectedIDs: payloadChunk,
         }
+        #headers: {
+        #    'apns-push-type': "background",
+        #    'apns-priority': "5"
+        #},
         n.sound = "water_droplet_3.wav"
         n.content_available = true
         n.save!
