@@ -135,6 +135,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    redis (4.2.4)
     rpush (5.2.0)
       activesupport (>= 5.0)
       jwt (>= 1.5.6)
@@ -144,6 +145,10 @@ GEM
       railties
       rainbow
       thor (>= 0.18.1, < 2.0)
+    sidekiq (6.1.2)
+      connection_pool (>= 2.2.2)
+      rack (~> 2.0)
+      redis (>= 4.2.0)
     spring (2.1.1)
     spring-watcher-listen (2.0.1)
       listen (>= 2.7, < 4.0)
@@ -177,6 +182,7 @@ DEPENDENCIES
   rack-cors
   rails (~> 6.0.3, >= 6.0.3.4)
   rpush
+  sidekiq
   spring
   spring-watcher-listen (~> 2.0.0)
   tzinfo-data
