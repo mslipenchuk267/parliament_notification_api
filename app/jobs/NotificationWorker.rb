@@ -23,7 +23,7 @@ class NotificationWorker
         n.app = Rpush::Apns::App.find_by_name("parliament_ios_distributed")
         n.device_token = device_token
         n.alert = {
-            title: "Parliament",
+            title: "Potential Exposure",
             body: "Check the Notifications Tab!"
         }
         # pass any custom data here
@@ -51,7 +51,7 @@ class NotificationWorker
         request["Authorization"] = "key=AAAAQPfWnqU:APA91bELotc45F69FyZUtQL5A4NnrIVwS-CsiMOE2OaWWgrcf53v3tvrbVdkZoL-b7ApjfgygOdN3Dd8neo45NGnpIhof8WfQ1pllAxXv3DWL3nVu1x36oOVnrTL09AH0sc9CnfRMir1"
         request["Content-Type"] = "application/json"
         request["Host"] = "fcm.googleapis.com"
-        request.body = "{\n    \"to\":\"#{device_token}\",\n    \"notification\" : {\n     \"body\" : \"please work\",\n     \"title\": \"Notification from postman\"\n    },\n    \"data\" : {\n        \"body\" : \"please work\",\n        \"title\": \"Notification from postman\",\n        \"infectedIDs\": #{payloadChunk}  }\n}"
+        request.body = "{\n    \"to\":\"#{device_token}\",\n    \"notification\" : {\n     \"body\" : \"Check the Notifications Tab!\",\n     \"title\": \"Potential Exposure\"\n    },\n    \"data\" : {\n        \"body\" : \"Check the Notifications Tab!\",\n        \"title\": \"Potential Exposure\",\n        \"infectedIDs\": #{payloadChunk}  }\n}"
         # Send Request
         response = https.request(request)
     end

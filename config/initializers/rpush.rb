@@ -138,6 +138,17 @@ Rpush.reflect do |on|
   # end
 end
 
+# if (!Rpush::Apns::App.find_by_name("parliament_ios_distributed"))
+#   app = Rpush::Apns::App.new
+#   app.name = "parliament_ios_distributed"
+#   env = Rails.env.development? ? "development" : "production"
+#   app.certificate = File.read("config/#{env}.pem")
+#   app.environment = env # APNs environment.
+#   app.password = "parliament"
+#   app.connections = 2
+#   app.save!
+end
+
 if (!Rpush::Apns::App.find_by_name("parliament_ios_distributed"))
   app = Rpush::Apns::App.new
   app.name = "parliament_ios_distributed"

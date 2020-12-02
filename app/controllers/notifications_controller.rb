@@ -42,7 +42,7 @@ class NotificationsController < ApplicationController
     private 
 
     def get_infected_ids
-        url_string = "http://a73906904480049e69678e0cb9be2e22-1728580132.us-east-2.elb.amazonaws.com" + "/temp_ids"
+        url_string = ENV['INFECTION_URI'] + "/temp_ids"
         url = URI(url_string)
         http = Net::HTTP.new(url.host, url.port);
         request = Net::HTTP::Post.new(url)
@@ -58,7 +58,7 @@ class NotificationsController < ApplicationController
     end
 
     def get_device_tokens
-        url_string = "http://a87713a1fd4b64cd4b788e8a1592de07-1206905140.us-west-2.elb.amazonaws.com"+ "/device_keys"
+        url_string = ENV['AUTH_URI'] + "/device_keys"
         url = URI(url_string)
         http = Net::HTTP.new(url.host, url.port);
         request = Net::HTTP::Post.new(url)
