@@ -6,7 +6,7 @@ class NotificationsController < ApplicationController
     def test_notification
         # # Get  infectedIDs (temp_id, created_date) from Infection API
         infectedIDs = get_infected_ids
-        payloadChunks = infectedIDs.each_slice(18)
+        payloadChunks = infectedIDs.each_slice(15)
 
         # Get deviceKeys from Auth API
         device_tokens = get_device_tokens
@@ -17,7 +17,7 @@ class NotificationsController < ApplicationController
             TestNotificationWorker.perform_async(device_tokens,JSON.generate(payloadChunk))
         end
 
-        render json: {status: "Successfully sent notifications"}
+        render json: {status: "Successfully Started Test Notification Workers"}
 
     end
 
@@ -35,7 +35,7 @@ class NotificationsController < ApplicationController
             NotificationWorker.perform_async(device_tokens,JSON.generate(payloadChunk))
         end
         
-        render json: {status: "Successfully sent notifications"}
+        render json: {status: "Successfully Started Notification Workers"}
 
     end
 
@@ -72,6 +72,5 @@ class NotificationsController < ApplicationController
         # Remove null entries
         device_tokens -= [nil]
     end
-
 
 end

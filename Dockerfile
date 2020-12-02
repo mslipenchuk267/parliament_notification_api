@@ -21,8 +21,6 @@ RUN gem install bundler -v 2.0.2
 RUN bundle config set deployment 'true'
 RUN bundle install
 #RUN bundle exec rpush init --active-record false
-RUN bundle exec redis-server
-RUN bundle exec sidekiq
 
 COPY . ./
 

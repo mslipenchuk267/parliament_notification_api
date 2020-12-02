@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parliament-notification # name of the deployment
+  labels: # these labels apply to the deployment
+    app: parliament-notification
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: parliament-notification
+  template:
+    metadata:
+      labels: # these labels apply to our container
+        app: parliament-notification
+    spec:
+      containers:
+        - name: parliament-notification # name of our container
+          image: 774458662053.dkr.ecr.us-east-2.amazonaws.com/parliament-notification:latest # the URI that we got from ECR
+          env:
+            - name: DB_URL
+              value: notification-database-1.cgrhpgcw1v5c.us-east-1.rds.amazonaws.com
+              # URL of our database endpoint
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-creds
+                  key: username # use the encoded username from the K8s secret db-creds
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-creds
+                  key: password # use the encoded password from the K8s secret db-creds
+            - name: DB_NAME
+              value: notification_db # our DB is named backend
+          ports:
+            - containerPort: 3000 # expose the running contianer on port 3000
