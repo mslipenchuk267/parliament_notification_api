@@ -1,6 +1,6 @@
 class NotificationWorker
     include Sidekiq::Worker
-    sidekiq_options retry: false
+    sidekiq_options :queue => :notification_queue, retry: false
   
     def perform(deviceTokens,payloadChunk)
       puts "SIDEKIQ WORKER SENDING NOTIFICATIONS"

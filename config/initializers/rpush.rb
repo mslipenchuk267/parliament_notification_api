@@ -147,7 +147,7 @@ end
 #   app.password = "parliament"
 #   app.connections = 2
 #   app.save!
-end
+#end
 
 if (!Rpush::Apns::App.find_by_name("parliament_ios_distributed"))
   app = Rpush::Apns::App.new

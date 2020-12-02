@@ -8,4 +8,4 @@ spec:
   - port: 80
     targetPort: 3000
   selector:
-    app: parliament-notification
+    app.kubernetes.io/name: parliament-notification
