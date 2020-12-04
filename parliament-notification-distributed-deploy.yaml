@@ -18,17 +18,17 @@ spec:
       containers:
       - name: parliament-notification # *******************************************
         image: 774458662053.dkr.ecr.us-east-2.amazonaws.com/parliament-notification:latest # *******************************************
-        #command: ["bundle"]
-        #args:
-          #- "exec"
-          #- "puma"
-          #- "-b"
-          #- "tcp://0.0.0.0:3000"
-          #- "-t"
-          #- "1:1"
-          #- "-w"
-          #- "12"
-          #- "--preload"
+        command: ["bundle"]
+        args:
+          - "exec"
+          - "puma"
+          - "-b"
+          - "tcp://0.0.0.0:3000"
+          - "-t"
+          - "1:1"
+          - "-w"
+          - "12"
+          - "--preload"
         env:
           - name: DB_URL
             value: notification-database-1.cgrhpgcw1v5c.us-east-1.rds.amazonaws.com
@@ -58,14 +58,15 @@ spec:
           - name: http
             containerPort: 3000
             protocol: TCP
-            #livenessProbe:
-            #  httpGet:
-            #    path: /lbcheck
-            #    port: http
-            #readinessProbe:
-            #  httpGet:
-            #    path: /lbcheck
-            #    port: http 
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: 6443
+        # readinessProbe:
+        #   httpGet:
+        #     path: /readyz
+        #     port: 6443 
+            
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -87,14 +88,14 @@ spec:
       containers:
       - name: parliament-notification # *******************************************
         image: 774458662053.dkr.ecr.us-east-2.amazonaws.com/parliament-notification:latest # *******************************************
-        #lifecycle:
-        #  preStop:
-        #    exec:
-        #      command: 
-        #        - "sidekiqctl" 
-        #        - "stop"
-        #        - "/tmp/sidekiq.pid"
-        #        - "180"
+        lifecycle:
+         preStop:
+           exec:
+             command: 
+               - "sidekiqctl" 
+               - "stop"
+               - "/tmp/sidekiq.pid"
+               - "180"
         command: ["bundle"]
         environment: 
         args:
@@ -102,10 +103,10 @@ spec:
           - "sidekiq"
           - "-c"
           - "2"
-          #- "-P"
-          #- "/tmp/sidekiq.pid"
-          #- "-t"
-          #- "90"
+          - "-P"
+          - "/tmp/sidekiq.pid"
+          - "-t"
+          - "180"
           #- "-q"
           #- "notification_queue"
           #- '-C' 
