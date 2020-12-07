@@ -76,7 +76,7 @@ metadata:
     app.kubernetes.io/name: parliament-notification-sidekiq # *******************************************
     workload-type: sidekiq
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: parliament-notification-sidekiq # *******************************************
