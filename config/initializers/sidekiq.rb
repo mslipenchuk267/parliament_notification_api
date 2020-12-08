@@ -6,8 +6,8 @@ redis_config.merge! redis_config.fetch(Rails.env, {})
 redis_config.symbolize_keys!
 
 Sidekiq.configure_server do |config|
- config.redis = { url: 'redis://parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com:6379/12' } #/12 
+ config.redis = { url: ENV['NOTIFICATION_QUEUE'] } 
 end
 Sidekiq.configure_client do |config|
- config.redis = { url: 'redis://parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com:6379/12'  } #/12 `#{redis_config[:host]}:#{redis_config[:port]}/12`
+ config.redis = { url: ENV['NOTIFICATION_QUEUE']  } 
 end
