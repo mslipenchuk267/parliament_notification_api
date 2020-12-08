@@ -1,24 +1,37 @@
-# README
+# Parliament Notification API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This API is responsible for notifying users of potential infection exposure
 
-Things you may want to cover:
+## Configuration
 
-* Ruby version
+* Ruby version = 2.7.1
+* Notification: Rpush
+* Database = Postgresql
 
-* System dependencies
+## Deployment Instructions
+### Development Environment
+- Run ``` bundle install ``` in root directory
+- Start server with ``` rails s ```
+     - Default command runs server on ```localhost:3002```
+- Run ``` bundle exec Sidekiq ``` in root directory
+- Run ``` redis-server ``` in root directory
 
-* Configuration
 
-* Database creation
+## Endpoints:
+- ```/send_notification ```
+    - Send out notifications to devices
 
-* Database initialization
+    - Example Successful Return:
+    ```
+    {
+      status: "Successfully Started Notification Workers"
+    }
+     
+- ```/test_notification ```
+    - Create local sidekiq workers to mock sending notifications
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+    - Example Successful Return:
+    ```
+    {
+      status: "Successfully Started Test Notification Workers"
+    }
