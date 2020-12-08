@@ -11,7 +11,7 @@ This API is responsible for notifying users of potential infection exposure
 # Deployment Instructions
 ## Production Environment
 ### Host
-
+http://a434a2b341eec42dd860776cfa521615-1630259772.us-east-1.elb.amazonaws.com:3003
 
 ## Development Environment
 - Run ``` bundle install ``` in root directory
