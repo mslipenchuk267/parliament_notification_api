@@ -1,5 +1,16 @@
 FROM ruby:2.7.1
 
+# Downgrade SSL to make APNs happy
+RUN sed -i '1s/^/openssl_conf = default_conf /' /etc/ssl/openssl.cnf
+RUN echo '[ default_conf ]' >> /etc/ssl/openssl.cnf
+RUN echo 'ssl_conf = ssl_sect' >> /etc/ssl/openssl.cnf
+RUN echo '[ssl_sect]' >> /etc/ssl/openssl.cnf
+RUN echo 'system_default = ssl_default_sect' >> /etc/ssl/openssl.cnf
+RUN echo '[ssl_default_sect]' >> /etc/ssl/openssl.cnf
+RUN echo 'MinProtocol = TLSv1.2' >> /etc/ssl/openssl.cnf
+RUN echo 'CipherString = DEFAULT:@SECLEVEL=0' >> /etc/ssl/openssl.cnf
+
+
 # Create a local folder for the app assets
 RUN mkdir /notification-backend
 WORKDIR /notification-backend

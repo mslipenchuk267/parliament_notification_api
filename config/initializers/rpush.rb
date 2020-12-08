@@ -138,36 +138,15 @@ Rpush.reflect do |on|
   # end
 end
 
-# if (!Rpush::Apns::App.find_by_name("parliament_ios_distributed"))
-#   app = Rpush::Apns::App.new
-#   app.name = "parliament_ios_distributed"
-#   env = Rails.env.development? ? "development" : "production"
-#   app.certificate = File.read("config/#{env}.pem")
-#   app.environment = env # APNs environment.
-#   app.password = "parliament"
-#   app.connections = 2
-#   app.save!
-#end
 
-if (!Rpush::Apns::App.find_by_name("parliament_ios_distributed"))
-  app = Rpush::Apns::App.new
-  app.name = "parliament_ios_distributed"
+
+if (!Rpush::Apns2::App.find_by_name("parliament_ios_distributed_notifications"))
+  app = Rpush::Apns2::App.new
+  app.name = "parliament_ios_distributed_notifications"
   env = Rails.env.development? ? "development" : "production"
   app.certificate = File.read("config/#{env}.pem")
   app.environment = env # APNs environment.
-  app.password = "parliament"
+  app.password = "Parliament99"
   app.connections = 2
   app.save!
 end
-
-# UNCOMMENT BELOW AND COMMENT OUT ABOVE TO TEST PROD NOTIFICATIONS WHILE API IS IN DEV
-# if (!Rpush::Apns::App.find_by_name("parliament_ios_prod_test"))
-#   app = Rpush::Apns::App.new
-#   app.name = "parliament_ios_prod_test"
-#   env = Rails.env.development? ? "development" : "production"
-#   app.certificate = File.read("config/production.pem")
-#   app.environment = env # APNs environment.
-#   app.password = "parliament"
-#   app.connections = 1
-#   app.save!
-# end

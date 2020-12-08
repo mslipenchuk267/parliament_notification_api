@@ -95,7 +95,7 @@ spec:
                - "sidekiqctl" 
                - "stop"
                - "/tmp/sidekiq.pid"
-               - "180"
+               - "120"
         command: ["bundle"]
         environment: 
         args:
@@ -106,7 +106,7 @@ spec:
           - "-P"
           - "/tmp/sidekiq.pid"
           - "-t"
-          - "180"
+          - "120"
           #- "-q"
           #- "notification_queue"
           #- '-C' 

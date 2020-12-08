@@ -25,6 +25,6 @@ spec:
     metadata:
       address: parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com:6379
       listName: queue:notification_queue
-      listLength: "2"
+      listLength: "1"
       databaseIndex: "12"
 ---

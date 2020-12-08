@@ -19,8 +19,8 @@ class NotificationWorker
 
     def send_apns_notification(device_token, payloadChunk)
         # Create notification
-        n = Rpush::Apns::Notification.new
-        n.app = Rpush::Apns::App.find_by_name("parliament_ios_distributed")
+        n = Rpush::Apns2::Notification.new
+        n.app = Rpush::Apns2::App.find_by_name("parliament_ios_distributed_notifications")
         n.device_token = device_token
         n.alert = {
             title: "Potential Exposure",
@@ -28,7 +28,7 @@ class NotificationWorker
         }
         # pass any custom data here
         n.data = {
-            type: 'message',
+            headers: { 'apns-topic': "org.machinedogs.parliament" },
             infectedIDs: payloadChunk,
         }
         #headers: {
@@ -52,6 +52,7 @@ class NotificationWorker
         request["Content-Type"] = "application/json"
         request["Host"] = "fcm.googleapis.com"
         request.body = "{\n    \"to\":\"#{device_token}\",\n    \"notification\" : {\n     \"body\" : \"Check the Notifications Tab!\",\n     \"title\": \"Potential Exposure\"\n    },\n    \"data\" : {\n        \"body\" : \"Check the Notifications Tab!\",\n        \"title\": \"Potential Exposure\",\n        \"infectedIDs\": #{payloadChunk}  }\n}"
+        #request.body = "{\n    \"to\":\"#{device_token}\",\n   \"data\" : {\n      \"infectedIDs\": #{payloadChunk}  }\n}"
         # Send Request
         response = https.request(request)
     end
