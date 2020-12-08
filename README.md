@@ -11,8 +11,7 @@ This API is responsible for notifying users of potential infection exposure
 ## Deployment Instructions
 ### Development Environment
 - Run ``` bundle install ``` in root directory
-- Start server with ``` rails s ```
-     - Default command runs server on ```localhost:3003```
+- Start server with ``` rails s -p 3003```
 - Run ``` bundle exec Sidekiq ``` in root directory
 - Run ``` redis-server ``` in root directory
 
