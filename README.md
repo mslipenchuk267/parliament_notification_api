@@ -11,7 +11,7 @@ This API is responsible for notifying users of potential infection exposure
 # Deployment Instructions
 ## Production Environment
 ### Host
-redis://parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com:6379/12
+
 
 ## Development Environment
 - Run ``` bundle install ``` in root directory
