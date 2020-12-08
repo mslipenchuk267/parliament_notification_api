@@ -4,17 +4,38 @@ require "net/http"
 class NotificationsController < ApplicationController
 
     def test_notification
-        # Get  infectedIDs (temp_id, created_date) from Infection API
-        @infectedIDs = get_infected_ids
+        # # Get  infectedIDs (temp_id, created_date) from Infection API
+        infectedIDs = get_infected_ids
+        payloadChunks = infectedIDs.each_slice(15)
 
         # Get deviceKeys from Auth API
         device_tokens = get_device_tokens
-        
-        # Send notifications to all users
-        device_tokens.each do |device_token|
-            send_notification(device_token)
+
+        #Test sending notifications with sidekiq jobs
+        payloadChunks.each_with_index do |payloadChunk,index|
+            puts "Chunk number #{index}:\n #{payloadChunk}"
+            TestNotificationWorker.perform_async(device_tokens,JSON.generate(payloadChunk))
         end
-        render json: {status: "Successfully sent notifications"}
+
+        render json: {status: "Successfully Started Test Notification Workers"}
+
+    end
+
+    def send_notification
+        # # Get  infectedIDs (temp_id, created_date) from Infection API
+        infectedIDs = get_infected_ids
+        payloadChunks = infectedIDs.each_slice(15)
+
+        # Get deviceKeys from Auth API
+        device_tokens = get_device_tokens
+
+        #Test sending notifications with sidekiq jobs
+        payloadChunks.each_with_index do |payloadChunk,index|
+            puts "Chunk number #{index}:\n #{payloadChunk}"
+            NotificationWorker.perform_async(device_tokens,JSON.generate(payloadChunk))
+        end
+        
+        render json: {status: "Successfully Started Notification Workers"}
 
     end
 
@@ -34,7 +55,6 @@ class NotificationsController < ApplicationController
         rawInfectedIDs = result_json['temp_ids']
         # Remove null entries
         rawInfectedIDs -= [nil]
-        JSON.generate(rawInfectedIDs)
     end
 
     def get_device_tokens
@@ -51,50 +71,6 @@ class NotificationsController < ApplicationController
         device_tokens = result_json['device_keys']
         # Remove null entries
         device_tokens -= [nil]
-    end
-
-    def send_notification(device_token)
-        if device_token.length < 162
-            send_apns_notification(device_token)
-        else 
-            send_fcm_notification(device_token)
-        end
-    end
-
-    def send_apns_notification(device_token)
-        # Create notification
-        n = Rpush::Apns::Notification.new
-        n.app = Rpush::Apns::App.find_by_name("parliament_ios")
-        n.device_token = device_token
-        n.alert = {
-            title: "From Notification API",
-            body: "Hello World 2"
-        }
-        # pass any custom data here
-        n.data = {
-            type: 'message',
-            infectedIDs: @infectedIDs,
-        }
-        n.sound = "water_droplet_3.wav"
-        n.content_available = true
-        n.save!
-        # Send Notification
-        Rpush.push
-    end
-
-    def send_fcm_notification(device_token)
-        # Assemble Request
-        url = URI("https://fcm.googleapis.com/fcm/send")
-        https = Net::HTTP.new(url.host, url.port);
-        https.use_ssl = true
-        request = Net::HTTP::Post.new(url)
-        request["Authorization"] = "key=AAAAQPfWnqU:APA91bELotc45F69FyZUtQL5A4NnrIVwS-CsiMOE2OaWWgrcf53v3tvrbVdkZoL-b7ApjfgygOdN3Dd8neo45NGnpIhof8WfQ1pllAxXv3DWL3nVu1x36oOVnrTL09AH0sc9CnfRMir1"
-        request["Content-Type"] = "application/json"
-        request["Host"] = "fcm.googleapis.com"
-        request.body = "{\n    \"to\":\"#{device_token}\",\n    \"notification\" : {\n     \"body\" : \"please work\",\n     \"title\": \"Notification from postman\"\n    },\n    \"data\" : {\n        \"body\" : \"please work\",\n        \"title\": \"Notification from postman\",\n        \"infectedIDs\": #{@infectedIDs}  }\n}"
-        # Send Request
-        response = https.request(request)
-        # Send Feedback
     end
 
 end

@@ -26,8 +26,9 @@ Rails.application.configure do
   end
 
 
-  ENV['AUTH_URI'] = "http://localhost:3000"
+  ENV['AUTH_URI'] = "http://localhost:3002"
   ENV['INFECTION_URI'] = "http://localhost:3001"
+  ENV['NOTIFICATION_QUEUE'] = "redis://localhost:6379"
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 

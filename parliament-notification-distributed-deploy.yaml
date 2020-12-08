@@ -1,0 +1,142 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parliament-notification # *******************************************
+  labels:
+    app.kubernetes.io/name: parliament-notification # *******************************************
+    workload-type: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: parliament-notification # *******************************************
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: parliament-notification # *******************************************
+    spec:
+      containers:
+      - name: parliament-notification # *******************************************
+        image: 774458662053.dkr.ecr.us-east-2.amazonaws.com/parliament-notification:latest # *******************************************
+        command: ["bundle"]
+        args:
+          - "exec"
+          - "puma"
+          - "-b"
+          - "tcp://0.0.0.0:3000"
+          - "-t"
+          - "1:1"
+          - "-w"
+          - "12"
+          - "--preload"
+        env:
+          - name: DB_URL
+            value: notification-database-1.cgrhpgcw1v5c.us-east-1.rds.amazonaws.com
+            # URL of our database endpoint
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-creds
+                key: username # use the encoded username from the K8s secret db-creds
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-creds
+                key: password # use the encoded password from the K8s secret db-creds
+          - name: DB_NAME
+            value: notification_db # our DB is named backend
+          - name: REDIS_HOST
+            value: parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com # *******************************************
+          - name: REDIS_ADDRESS
+            value: parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com:6379 # *******************************************
+          #- name: REDIS_PASSWORD
+          #  valueFrom:
+          #    secretKeyRef:
+          #      name: redis-secret
+          #      key: REDIS_PASSWORD          
+        ports:
+          - name: http
+            containerPort: 3000
+            protocol: TCP
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: 6443
+        # readinessProbe:
+        #   httpGet:
+        #     path: /readyz
+        #     port: 6443 
+            
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parliament-notification-sidekiq # *******************************************
+  labels:
+    app.kubernetes.io/name: parliament-notification-sidekiq # *******************************************
+    workload-type: sidekiq
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: parliament-notification-sidekiq # *******************************************
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: parliament-notification-sidekiq # *******************************************
+    spec:
+      containers:
+      - name: parliament-notification # *******************************************
+        image: 774458662053.dkr.ecr.us-east-2.amazonaws.com/parliament-notification:latest # *******************************************
+        lifecycle:
+         preStop:
+           exec:
+             command: 
+               - "sidekiqctl" 
+               - "stop"
+               - "/tmp/sidekiq.pid"
+               - "120"
+        command: ["bundle"]
+        environment: 
+        args:
+          - "exec"
+          - "sidekiq"
+          - "-c"
+          - "2"
+          - "-P"
+          - "/tmp/sidekiq.pid"
+          - "-t"
+          - "120"
+          #- "-q"
+          #- "notification_queue"
+          #- '-C' 
+          #- 'config/sidekiq.yml'
+          #- "-i"
+          #- "0"
+        env:
+          - name: DB_URL
+            value: notification-database-1.cgrhpgcw1v5c.us-east-1.rds.amazonaws.com
+            # URL of our database endpoint
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-creds
+                key: username # use the encoded username from the K8s secret db-creds
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-creds
+                key: password # use the encoded password from the K8s secret db-creds
+          - name: DB_NAME
+            value: notification_db # our DB is named backend
+          - name: REDIS_HOST
+            value: parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com # *******************************************
+          - name: REDIS_ADDRESS
+            value: parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com:6379 # *******************************************
+          #- name: REDIS_PASSWORD
+          #  valueFrom:
+          #    secretKeyRef:
+          #      name: redis-secret
+          #      key: REDIS_PASSWORD
+        ports:
+          - containerPort: 3000 # expose the running contianer on port 3000

@@ -1,0 +1,30 @@
+# apiVersion: keda.k8s.io/v1alpha1
+# kind: TriggerAuthentication
+# metadata:
+#   name: redis-auth
+# spec:
+#   secretTargetRef:
+#   - parameter: password
+#     name: redis-secret
+#     key: REDIS_PASSWORD
+# ---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: sidekiq-worker  
+spec:
+  scaleTargetRef:
+    name: parliament-notification-sidekiq
+    envSourceContainerName: parliament-notification
+  pollingInterval: 5
+  cooldownPeriod:  300
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  triggers:
+  - type: redis
+    metadata:
+      address: parliament-notification-queue.glyyuo.ng.0001.use1.cache.amazonaws.com:6379
+      listName: queue:notification_queue
+      listLength: "1"
+      databaseIndex: "12"
+---
