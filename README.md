@@ -39,3 +39,6 @@ http://localhost:3003
     {
       status: "Successfully Started Test Notification Workers"
     }
+    
+- ```/sidekiq ```
+    - Displays a web UI for monitoring the current status of Sidekiq workers
