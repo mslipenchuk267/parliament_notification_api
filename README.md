@@ -14,10 +14,10 @@ This API is responsible for notifying users of potential infection exposure
 http://a434a2b341eec42dd860776cfa521615-1630259772.us-east-1.elb.amazonaws.com
 
 ## Development Environment
-- Run ``` bundle install ``` in root directory
+- Run ``` bundle install ``` in project root directory
 - Start server with ``` rails s -p 3003```
-- Run ``` bundle exec Sidekiq ``` in root directory
-- Run ``` redis-server ``` in root directory
+- In another terminal run ``` redis-server ```
+- In another terminal run ``` bundle exec Sidekiq ``` in project root directory
 ### Host
 http://localhost:3003
 
